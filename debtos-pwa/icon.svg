@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#07070f"/>
+  <rect x="40" y="40" width="432" height="432" rx="80" fill="#111120"/>
+  <!-- D letter -->
+  <text x="256" y="320" font-family="sans-serif" font-weight="900" font-size="220" fill="#ff3d5a" text-anchor="middle">₿</text>
+  <!-- bottom stripe -->
+  <rect x="80" y="400" width="352" height="28" rx="14" fill="#ff3d5a" opacity="0.3"/>
+</svg>
