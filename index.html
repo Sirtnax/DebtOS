@@ -183,6 +183,13 @@ tfoot td{background:var(--surface);border-top:1px solid var(--border);font-weigh
 <div id="loginScreen">
   <div class="login-logo">DEBT<em>OS</em></div>
   <div class="login-sub">ระบบติดตามหนี้ส่วนตัว</div>
+  <div id="installBanner" style="display:none;width:100%;max-width:340px;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:center">
+    <div style="font-size:1.6rem;margin-bottom:6px">📲</div>
+    <div style="font-size:.85rem;font-weight:600;color:var(--green);margin-bottom:4px">ติดตั้ง DebtOS เป็นแอพ!</div>
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">ใช้งานได้แบบ offline ไม่มีโฆษณา</div>
+    <button onclick="doInstall()" style="background:var(--green);color:#003828;border:none;border-radius:9px;padding:10px 28px;font-size:.88rem;font-family:'Noto Sans Thai',sans-serif;font-weight:700;cursor:pointer;width:100%">ติดตั้งเลย</button>
+    <button onclick="document.getElementById('installBanner').style.display='none'" style="background:none;border:none;color:var(--muted);font-size:.72rem;margin-top:8px;cursor:pointer;font-family:'Noto Sans Thai',sans-serif">ไม่ใช่ตอนนี้</button>
+  </div>
   <div class="login-box">
     <div class="pin-label" id="pinLabel">ใส่ PIN 4 หลัก</div>
     <div class="login-err" id="pinErr"></div>
@@ -209,6 +216,7 @@ tfoot td{background:var(--surface);border-top:1px solid var(--border);font-weigh
       <button class="btn btn-ghost" style="padding:5px 10px;font-size:.82rem" onclick="goTab('schedule')">🔔</button>
       <div class="notif-dot" id="notifDot" style="display:none"></div>
     </div>
+    <button id="installBtn" style="display:none;background:var(--green);color:#003828;border:none;border-radius:8px;padding:5px 11px;font-size:.72rem;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;font-weight:600;margin-left:2px" onclick="doInstall()">📲 ติดตั้ง</button>
     <button class="btn btn-ghost" style="padding:5px 8px;font-size:.72rem;margin-left:2px;color:var(--muted)" onclick="doLock()">🔒</button>
   </div>
   <div class="main" id="main"><div id="content"></div></div>
@@ -1014,6 +1022,43 @@ function exportCSV(){
 }
 
 function dSort(k){if(_sk===k)_sd=-_sd;else{_sk=k;_sd=-1;}render();}
+
+// ─── PWA INSTALL ───────────────────────────────────────────────
+let _deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredPrompt = e;
+  // แสดงปุ่มบน topbar
+  const btn = document.getElementById('installBtn');
+  if(btn) btn.style.display = 'block';
+  // แสดง banner หน้า login
+  const banner = document.getElementById('installBanner');
+  if(banner) banner.style.display = 'block';
+});
+
+window.addEventListener('appinstalled', () => {
+  _deferredPrompt = null;
+  const btn = document.getElementById('installBtn');
+  if(btn) btn.style.display = 'none';
+  const banner = document.getElementById('installBanner');
+  if(banner) banner.style.display = 'none';
+  toast('🎉 ติดตั้ง DebtOS สำเร็จ! เช็ค Home Screen ได้เลย');
+});
+
+async function doInstall(){
+  if(!_deferredPrompt){ toast('เปิดใน​Chrome แล้วลองใหม่นะครับ','var(--orange)'); return; }
+  _deferredPrompt.prompt();
+  const {outcome} = await _deferredPrompt.userChoice;
+  if(outcome === 'accepted'){
+    toast('✓ กำลังติดตั้ง...');
+  }
+  _deferredPrompt = null;
+  const btn = document.getElementById('installBtn');
+  if(btn) btn.style.display = 'none';
+  const banner = document.getElementById('installBanner');
+  if(banner) banner.style.display = 'none';
+}
 
 // ─── INIT ──────────────────────────────────────────────────────
 initLogin();
